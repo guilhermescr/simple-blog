@@ -4,15 +4,16 @@ const UPDATE_COMMENT_BUTTON = document.getElementById('updateCommentButton');
 const DELETE_COMMENT_BUTTON = document.getElementById('deleteCommentButton');
 const UPDATE_DATA_CONTAINER = document.querySelector('.updateDataContainer');
 const COMMENTS_CONTAINER = document.querySelector('.comments');
-const commentsURL = 'http://localhost:3000/comments';
+const commentsURL = 'https://simple-blog-api-v3aa.onrender.com/blog';
 
 const isValueValid = async (data, validationType) => {
   switch (validationType) {
     case 'numbers':
       const comments = await getComments();
       const hasOnlyNumbers = /^[0-9]+$/.test(data);
+      const hasThisComment = comments.find(comment => comment.id == data);
 
-      return hasOnlyNumbers && comments.length;
+      return hasOnlyNumbers && comments.length && hasThisComment;
     default:
       break;
   }
@@ -39,49 +40,48 @@ const toggleUpdateDataOption = function () {
   }
 };
 
-/*
-const sortCommentsId = async () => {
-  const comments = await getComments();
-  let index = 1;
-
-  while (index <= comments.length) {
-    const commentId = comments[index].id;
-
-    fetch(`${commentsURL}/${commentId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: index,
-        ...comments[index]
-      })
-    })
-      .then(response => response.json())
-      .then(() => {
-        renderComments();
-      });
-
-    index++;
-  }
-};
-*/
-
 const getComments = async () => {
   const response = await fetch(commentsURL);
-  const comments = await response.json();
+  const comments = (await response.json()).comments;
   return comments;
 };
 
 const getComment = async () => {
+  const comments = await getComments();
   const commentIdInput = document.getElementById('getCommentIdInput');
 
   if (await isValueValid(commentIdInput.value, 'numbers')) {
-    const response = await fetch(`${commentsURL}/${commentIdInput.value}`);
-    const data = await response.json();
+    const data = comments.find(comment => comment.id == commentIdInput.value);
     console.log('HTTP GET Method:', data);
   }
   commentIdInput.value = '';
+};
+
+const sortCommentsId = async () => {
+  const comments = await getComments();
+
+  comments.forEach((comment, index) => {
+    comment.id = index + 1;
+  });
+
+  const blog = {
+    comments,
+    posts: [],
+    users: [],
+    credits: {}
+  };
+
+  fetch(commentsURL, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(blog)
+  })
+    .then(response => response.json())
+    .then(() => {
+      renderComments();
+    });
 };
 
 const addComment = async () => {
@@ -96,13 +96,19 @@ const addComment = async () => {
     author: commentAuthorInput.value,
     body: commentInput.value
   };
+  const blog = {
+    comments: [...comments, comment],
+    posts: [],
+    users: [],
+    credits: {}
+  };
 
   await fetch(commentsURL, {
-    method: 'POST',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(comment)
+    body: JSON.stringify(blog)
   });
 
   renderComment(comment);
@@ -122,12 +128,25 @@ const updateComment = async () => {
   ) {
     comment[commentProp] = UPDATE_DATA_INPUT_CHILD.value;
 
-    fetch(`${commentsURL}/${commentId}`, {
+    const blog = {
+      comments: comments.map($comment => {
+        if ($comment.id == comment.id) {
+          return { ...comment };
+        } else {
+          return $comment;
+        }
+      }),
+      posts: [],
+      users: [],
+      credits: {}
+    };
+
+    fetch(commentsURL, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(comment)
+      body: JSON.stringify(blog)
     })
       .then(response => response.json())
       .then(() => {
@@ -139,16 +158,29 @@ const updateComment = async () => {
 };
 
 const deleteComment = async () => {
+  const comments = await getComments();
   const commentIdInput = document.getElementById('deleteCommentIdInput');
   const commentId = commentIdInput.value;
 
   if (await isValueValid(commentId, 'numbers')) {
-    fetch(`${commentsURL}/${commentId}`, {
-      method: 'DELETE'
+    const updatedComments = comments.filter(comment => comment.id != commentId);
+
+    const blog = {
+      comments: updatedComments,
+      posts: [],
+      users: [],
+      credits: {}
+    };
+    fetch(commentsURL, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(blog)
     })
       .then(response => response.json())
       .then(() => {
-        renderComments();
+        sortCommentsId();
       });
   }
   commentIdInput.value = '';
