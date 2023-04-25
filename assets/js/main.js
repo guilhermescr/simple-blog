@@ -39,6 +39,34 @@ const toggleUpdateDataOption = function () {
   }
 };
 
+/*
+const sortCommentsId = async () => {
+  const comments = await getComments();
+  let index = 1;
+
+  while (index <= comments.length) {
+    const commentId = comments[index].id;
+
+    fetch(`${commentsURL}/${commentId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: index,
+        ...comments[index]
+      })
+    })
+      .then(response => response.json())
+      .then(() => {
+        renderComments();
+      });
+
+    index++;
+  }
+};
+*/
+
 const getComments = async () => {
   const response = await fetch(commentsURL);
   const comments = await response.json();
