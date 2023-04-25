@@ -1,0 +1,6 @@
+{
+  "name": "root",
+  "scripts": {
+    "build": "json-server --watch db.json"
+  }
+}
