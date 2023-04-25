@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <title>JSON Server</title>
+  </head>
+  <body>
+    <header class="header">
+      <h1>Blog</h1>
+    </header>
+
+    <main class="main">
+      <section class="crud">
+        <h2>Comments Editor</h2>
+
+        <ul class="comments-options">
+          <li class="comments-option">
+            <h3>Get Comment:</h3>
+
+            <div>
+              <input
+                type="number"
+                id="getCommentIdInput"
+                placeholder="Insert an id..."
+              />
+              <button id="getCommentButton">Get Comment</button>
+            </div>
+          </li>
+
+          <li class="comments-option">
+            <h3>Add Comment:</h3>
+
+            <div>
+              <input
+                type="text"
+                id="comment-author"
+                placeholder="Who is the author?"
+              />
+              <textarea
+                id="comment-content"
+                cols="35"
+                rows="5"
+                placeholder="Add a thought..."
+              ></textarea>
+              <button id="addCommentButton">Add Comment</button>
+            </div>
+          </li>
+
+          <li class="comments-option">
+            <h3>Update Comment:</h3>
+
+            <div>
+              <label for="updateCommentId">Comment ID:</label>
+              <input
+                type="number"
+                id="updateCommentId"
+                placeholder="Insert an id..."
+              />
+            </div>
+
+            <div>
+              <label>Which data do you want to update?</label>
+
+              <ul class="update-comment-options">
+                <li>
+                  <label for="commentAuthorOption">Author</label>
+                  <input
+                    type="radio"
+                    name="updateCommentOption"
+                    id="commentAuthorOption"
+                    checked
+                  />
+                </li>
+
+                <li>
+                  <label for="commentContentOption">Content</label>
+                  <input
+                    type="radio"
+                    name="updateCommentOption"
+                    id="commentContentOption"
+                  />
+                </li>
+              </ul>
+
+              <div class="updateDataContainer" id="author">
+                <input
+                  type="text"
+                  id="updateCommentAuthorInput"
+                  placeholder="Insert another author..."
+                />
+              </div>
+
+              <button id="updateCommentButton">Update Comment</button>
+            </div>
+          </li>
+
+          <li class="comments-option">
+            <h3>Delete Comment:</h3>
+
+            <div>
+              <input
+                type="number"
+                id="deleteCommentIdInput"
+                placeholder="Insert an id..."
+              />
+              <button id="deleteCommentButton">Delete Comment</button>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="social-area">
+        <h2>Comments</h2>
+
+        <section class="comments"></section>
+      </section>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
