@@ -94,13 +94,17 @@ const updateComment = async () => {
   ) {
     comment[commentProp] = UPDATE_DATA_INPUT_CHILD.value;
 
-    await fetch(`${commentsURL}/${commentId}`, {
+    fetch(`${commentsURL}/${commentId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(comment)
-    });
+    })
+      .then(response => response.json())
+      .then(() => {
+        renderComments();
+      });
   }
   UPDATE_COMMENT_ID_INPUT.value = '';
   UPDATE_DATA_INPUT_CHILD.value = '';
@@ -111,9 +115,13 @@ const deleteComment = async () => {
   const commentId = commentIdInput.value;
 
   if (await isValueValid(commentId, 'numbers')) {
-    await fetch(`${commentsURL}/${commentId}`, {
+    fetch(`${commentsURL}/${commentId}`, {
       method: 'DELETE'
-    });
+    })
+      .then(response => response.json())
+      .then(() => {
+        renderComments();
+      });
   }
   commentIdInput.value = '';
 };
@@ -137,6 +145,7 @@ const renderComment = ({ author, body }) => {
 
 const renderComments = async () => {
   const commentsData = await getComments();
+  COMMENTS_CONTAINER.innerHTML = '';
 
   commentsData.forEach(commentData => {
     renderComment(commentData, false);
